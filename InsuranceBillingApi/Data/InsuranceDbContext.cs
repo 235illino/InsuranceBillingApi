@@ -9,6 +9,8 @@ namespace InsuranceBillingApi.Data
         public DbSet<Client> Clients { get; set; }
         public DbSet<InsurancePolicy> Policies { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         public InsuranceDbContext(DbContextOptions<InsuranceDbContext> options) : base(options)
         {
         }

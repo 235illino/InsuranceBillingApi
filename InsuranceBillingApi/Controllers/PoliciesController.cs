@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using InsuranceBillingApi.Data;
 using InsuranceBillingApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class PoliciesController : ControllerBase
