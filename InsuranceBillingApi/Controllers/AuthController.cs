@@ -3,12 +3,12 @@ using InsuranceBillingApi.Dtos;
 using InsuranceBillingApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-[AllowAnonymous]
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
@@ -23,29 +23,33 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<IActionResult> Register(RegisterDto dto)
     {
         var userExists = await _context.Users.AnyAsync(u => u.Username == dto.Username);
-        if (userExists) return BadRequest("User already exists");
+        if (userExists)
+            return BadRequest("User already exists");
 
         var user = new User
         {
             Username = dto.Username,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+            Role = dto.Role ?? "User"
         };
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        return Ok("User registered");
+        return Ok("User registered successfully");
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<IActionResult> Login(LoginDto dto)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == dto.Username);
         if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            return Unauthorized();
+            return Unauthorized("Invalid username or password");
 
         var token = GenerateJwtToken(user);
         return Ok(new { token });
@@ -64,8 +68,9 @@ public class AuthController : ControllerBase
 
         var token = new JwtSecurityToken(
             issuer: _config["Jwt:Issuer"] ?? "InsuranceApi",
+            audience: null,
             claims: claims,
-            expires: DateTime.Now.AddHours(2),
+            expires: DateTime.UtcNow.AddHours(2),
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
