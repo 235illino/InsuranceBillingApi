@@ -1,0 +1,6 @@
+@InsuranceBillingApi_HostAddress = http://localhost:5280
+
+GET {{InsuranceBillingApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
