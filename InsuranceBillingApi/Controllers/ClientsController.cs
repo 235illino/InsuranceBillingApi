@@ -2,6 +2,7 @@
 using InsuranceBillingApi.Data;
 using InsuranceBillingApi.Dtos;
 using InsuranceBillingApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,7 @@ public class ClientsController : ControllerBase
     }
 
     // GET: api/clients
+    [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ClientWithPoliciesDto>>> GetClients()
     {
