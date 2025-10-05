@@ -10,8 +10,8 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var jwtKey = builder.Configuration["Jwt:Key"] ?? "super_secret_key_123!";
-var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "InsuranceApi";
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
 builder.Services.AddAuthentication(options =>
 {
