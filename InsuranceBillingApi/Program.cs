@@ -1,10 +1,34 @@
 ﻿using InsuranceBillingApi.Data;
 using InsuranceBillingApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "super_secret_key_123!";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "InsuranceApi";
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+});
 
 // Add services to the container.
 
@@ -31,6 +55,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseAuthentication();
 
 app.UseAuthorization();
 
