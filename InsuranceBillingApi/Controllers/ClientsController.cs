@@ -2,9 +2,12 @@
 using InsuranceBillingApi.Data;
 using InsuranceBillingApi.Dtos;
 using InsuranceBillingApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ClientsController : ControllerBase
@@ -106,6 +109,7 @@ public class ClientsController : ControllerBase
 
     // DELETE: api/clients/5
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteClient(int id)
     {
         var client = await _context.Clients.FindAsync(id);
